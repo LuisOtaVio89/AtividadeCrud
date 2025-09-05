@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AtividadeCrud.Map
 {
-    public class UsuarioMap : IEntityTypeConfiguration<Usuario>
+    public class UsuarioMap : IEntityTypeConfiguration<UsuarioModel>
     {
-        public void Configure(EntityTypeBuilder<Usuario> builder)
+        public void Configure(EntityTypeBuilder<UsuarioModel> builder)
         {
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.Nome).IsRequired().HasMaxLength(255);

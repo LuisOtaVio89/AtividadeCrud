@@ -11,11 +11,10 @@ namespace AtividadeCrud.Data
         }
 
         public DbSet<Categorias> Categorias { get; set; }
-        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<UsuarioModel> Usuarios { get; set; }
         public DbSet<Pedidos> Pedidos { get; set; }
         public DbSet<Produtos> Produtos { get; set; }
         public DbSet<PedidosProdutos> PedidosProdutos { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UsuarioMap());

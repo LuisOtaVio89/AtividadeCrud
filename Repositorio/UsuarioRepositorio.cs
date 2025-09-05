@@ -14,7 +14,7 @@ namespace AtividadeCrud.Repositorio
             _dbContext = dbContext;
         }
 
-        public async Task<Usuario> Adicionar(Usuario usuario)
+        public async Task<UsuarioModel> Adicionar(UsuarioModel usuario)
         {
             await _dbContext.Usuarios.AddAsync(usuario);
             await _dbContext.SaveChangesAsync();
@@ -24,7 +24,7 @@ namespace AtividadeCrud.Repositorio
 
         public async Task<bool> Apagar(int id)
         {
-            Usuario usuarioPorId = await BuscarPorId(id);
+            UsuarioModel usuarioPorId = await BuscarPorId(id);
 
             if (usuarioPorId == null)
             {
@@ -37,9 +37,9 @@ namespace AtividadeCrud.Repositorio
             return true;
         }
 
-        public async Task<Usuario> Atualizar(Usuario usuario, int id)
+        public async Task<UsuarioModel> Atualizar(UsuarioModel usuario, int id)
         {
-            Usuario usuarioPorId = await BuscarPorId(id);
+            UsuarioModel usuarioPorId = await BuscarPorId(id);
 
             if (usuarioPorId == null)
             {
@@ -48,24 +48,24 @@ namespace AtividadeCrud.Repositorio
 
             usuarioPorId.Nome = usuario.Nome;
             usuarioPorId.Email = usuario.Email;
-            //usuarioPorId.UsuarioId = usuario.UsuarioId;
+
 
             await _dbContext.SaveChangesAsync();
 
             return usuarioPorId;
         }
 
-        public async Task<Usuario> BuscarPorId(int id)
+        public async Task<UsuarioModel> BuscarPorId(int id)
         {
             return await _dbContext.Usuarios
-                //.Include(x => x.Usuario)
+
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<Usuario>> BuscarTodosUsuarios()
+        public async Task<List<UsuarioModel>> BuscarTodosUsuarios()
         {
             return await _dbContext.Usuarios
-               //.Include(x => x.Usuario)
+
                .ToListAsync();
         }
     }

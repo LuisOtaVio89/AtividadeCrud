@@ -1,31 +1,75 @@
-using AtividadeCrud.Data;
-using AtividadeCrud.Repositorio;
-using AtividadeCrud.Repositorio.Intarfaces;
-using AtividadeCrud.Repositorio.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
+using AtividadeCrud.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
+string chaveSecreta = "chave-super-secreta-123456";
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle-
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ICategoriasRepositorio, CategoriasRepositorio>();
-builder.Services.AddScoped<IPedidosProdutosRepositorio, PedidosProdutosRepositorio>();
-builder.Services.AddScoped<IPedidosRepositorio, PedidosRepositorio>();
-builder.Services.AddScoped<IProdutosRepositorio, ProdutosRepositorio>();
-builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
 
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Sistema de Vendas - API",
+        Version = "v1"
+    });
+
+    var securitySchema = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Insira o token JWT no campo abaixo (ex: Bearer {seu token})",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = JwtBearerDefaults.AuthenticationScheme
+        }
+    };
+
+    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securitySchema);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { securitySchema, new string[] {} }
+    });
+});
+
+/* ?? Conexão com Banco de Dados */
 builder.Services.AddDbContext<AtividadeCrudDbContext>(
-        options => options.UseSqlServer(builder.Configuration.GetConnectionString("DataBase"))
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DataBase"))
 );
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = "empresa",        // pode customizar
+        ValidAudience = "aplicacao",    // pode customizar
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(chaveSecreta))
+    };
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+/* ?? Configuração do Swagger */
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -34,6 +78,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+/* ?? Ativar Autenticação e Autorização */
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

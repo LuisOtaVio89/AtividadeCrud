@@ -16,7 +16,7 @@ namespace AtividadeCrud.Controllers
 
         // GET: api/Usuario
         [HttpGet]
-        public async Task<ActionResult<List<Usuario>>> BuscarTodos()
+        public async Task<ActionResult<List<UsuarioModel>>> BuscarTodos()
         {
             var usuarios = await _usuarioRepositorio.BuscarTodosUsuarios();
             return Ok(usuarios);
@@ -24,7 +24,7 @@ namespace AtividadeCrud.Controllers
 
         // GET: api/Usuario/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> BuscarPorId(int id)
+        public async Task<ActionResult<UsuarioModel>> BuscarPorId(int id)
         {
             var usuario = await _usuarioRepositorio.BuscarPorId(id);
 
@@ -38,7 +38,7 @@ namespace AtividadeCrud.Controllers
 
         // POST: api/Usuario
         [HttpPost]
-        public async Task<ActionResult<Usuario>> Adicionar([FromBody] Usuario usuario)
+        public async Task<ActionResult<UsuarioModel>> Adicionar([FromBody] UsuarioModel usuario)
         {
             if (usuario == null)
             {
@@ -51,7 +51,7 @@ namespace AtividadeCrud.Controllers
 
         // PUT: api/Usuario/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<Usuario>> Atualizar(int id, [FromBody] Usuario usuario)
+        public async Task<ActionResult<UsuarioModel>> Atualizar(int id, [FromBody] UsuarioModel usuario)
         {
             if (id <= 0)
             {
